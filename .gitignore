@@ -1,0 +1,16 @@
+backend/target/
+backend/.mvn/
+backend/.idea/
+backend/.project
+backend/.classpath
+backend/.settings/
+*.iml
+
+
+frontend/node_modules/
+frontend/dist/
+
+
+.DS_Store
+Thumbs.db
+backend/src/main/resources/data/sales_data.csv
