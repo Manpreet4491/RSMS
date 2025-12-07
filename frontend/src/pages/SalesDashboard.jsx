@@ -1,55 +1,72 @@
-import { useEffect, useState } from "react";
-import { fetchSales } from "../services/salesApi";
+import React from "react";
 import FiltersRow from "../components/FiltersRow";
+import SearchBar from "../components/SearchBar";
+import SortBar from "../components/SortBar";
 import StatsCards from "../components/StatsCards";
 import SalesTable from "../components/SalesTable";
 import Pagination from "../components/Pagination";
+import "../styles.css"; // or "./styles.css" depending on your setup
 
-export default function SalesDashboard() {
-  const [filters, setFilters] = useState({
-    search: "",
-    page: 0,
-    size: 10,
-    sortBy: "customerName",
-    sortDir: "asc",
-    regions: [],
-    genders: [],
-    productCategories: [],
-    paymentMethods: [],
-    tags: [],
-    customerTypes: [],
-  });
-
-  const [rows, setRows] = useState([]);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
-
-  useEffect(() => {
-    async function load() {
-      const res = await fetchSales(filters);
-      setRows(res.content || []);
-      setTotalPages(res.totalPages ?? 0);
-      setTotalElements(res.totalElements ?? 0);
-    }
-    load();
-  }, [filters]);
-
+const SalesDashboard = ({
+  filters,
+  onFiltersChange,
+  stats,
+  pageData,
+  onPageChange,
+}) => {
   return (
-    <>
-      <div className="header">Sales Management System</div>
+    <div className="app-root">
+      <div className="app-shell">
+        <header className="app-header">
+          <h1 className="app-title">Sales Management System</h1>
+        </header>
 
-      <FiltersRow filters={filters} setFilters={setFilters} />
+        {/* Filters bar + search + sort */}
+        <div className="toolbar">
+          <div className="toolbar-left">
+            <button
+              className="icon-button"
+              onClick={() => onFiltersChange({ reset: true })}
+            >
+              ⟳
+            </button>
+            <FiltersRow filters={filters} onChange={onFiltersChange} />
+          </div>
 
-      <StatsCards rows={rows} total={totalElements} />
+          <div className="toolbar-right">
+            <SearchBar
+              value={filters.searchTerm}
+              onChange={(value) =>
+                onFiltersChange({ searchTerm: value, page: 0 })
+              }
+              placeholder="Name, Phone no."
+            />
+            <SortBar
+              value={filters.sortBy}
+              onChange={(value) => onFiltersChange({ sortBy: value, page: 0 })}
+            />
+          </div>
+        </div>
 
-      <SalesTable rows={rows} />
+        {/* KPI cards */}
+        <StatsCards stats={stats} />
 
-      <Pagination
-        page={filters.page}
-        totalPages={totalPages}
-        onPageChange={(p) => setFilters({ ...filters, page: p })}
-      />
+        {/* Table */}
+        <div className="table-card">
+          <SalesTable page={pageData} />
+        </div>
 
-    </>
+        {/* Pagination */}
+        <div className="pagination-wrapper">
+          <Pagination
+            page={pageData?.number || 0}
+            totalPages={pageData?.totalPages || 1}
+            onPageChange={onPageChange}
+          />
+        </div>
+      </div>
+    </div>
   );
-}
+};
+
+export default SalesDashboard;

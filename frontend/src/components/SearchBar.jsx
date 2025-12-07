@@ -1,14 +1,18 @@
-export default function SearchBar({ value, onChange }) {
+import React from "react";
+
+const SearchBar = ({ value, onChange, placeholder }) => {
   return (
-    <div className="search-wrapper">
-      <span className="search-icon">⌕</span>
+    <div className="search-bar">
+      <span className="search-icon">🔍</span>
       <input
         className="search-input"
         type="text"
         value={value}
-        placeholder="Search by customer name or phone"
-        onChange={e => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder || "Name, Phone no."}
       />
     </div>
   );
-}
+};
+
+export default SearchBar;

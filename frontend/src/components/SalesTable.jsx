@@ -1,7 +1,11 @@
-export default function SalesTable({ rows }) {
+import React from "react";
+
+const SalesTable = ({ page }) => {
+  const rows = page?.content || [];
+
   return (
-    <div className="table-wrapper">
-      <table className="table">
+    <div className="table-container">
+      <table className="sales-table">
         <thead>
           <tr>
             <th>Transaction ID</th>
@@ -28,12 +32,10 @@ export default function SalesTable({ rows }) {
               <td>{r.customerName}</td>
               <td>{r.phoneNumber}</td>
               <td>{r.gender}</td>
-              <td className="text-center">{r.age}</td>
+              <td>{r.age}</td>
               <td>{r.productCategory}</td>
-              <td className="text-center">{r.quantity}</td>
-              <td className="text-right">
-                ₹ {Number(r.totalAmount || 0).toLocaleString("en-IN")}
-              </td>
+              <td>{r.quantity}</td>
+              <td>₹ {r.totalAmount}</td>
               <td>{r.customerRegion}</td>
               <td>{r.productId}</td>
               <td>{r.employeeName}</td>
@@ -43,4 +45,6 @@ export default function SalesTable({ rows }) {
       </table>
     </div>
   );
-}
+};
+
+export default SalesTable;
