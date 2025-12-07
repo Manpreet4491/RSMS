@@ -1,72 +1,95 @@
 import React from "react";
 
-const FiltersRow = ({ filters, onChange }) => {
-  const handlePatch = (patch) => onChange({ ...filters, ...patch, page: 0 });
+const regions = ["North", "South", "East", "West", "Central"];
+const genders = ["Male", "Female", "Other"];
+const ageRanges = ["18–25", "26–35", "36–45", "46–60", "60+"];
+const categories = ["Electronics", "Clothing", "Beauty", "Grocery", "Home"];
+const paymentMethods = ["UPI", "Credit Card", "Debit Card", "Cash"];
 
+export default function FiltersRow({ filters, onChange }) {
   return (
     <div className="filters-row">
       <select
         className="filter-pill"
-        value={filters.customerRegion || ""}
-        onChange={(e) => handlePatch({ customerRegion: e.target.value })}
+        value={filters.customerRegion}
+        onChange={e => onChange({ customerRegion: e.target.value })}
       >
         <option value="">Customer Region</option>
-        <option value="North">North</option>
-        <option value="South">South</option>
-        <option value="East">East</option>
-        <option value="West">West</option>
-        <option value="Central">Central</option>
+        {regions.map(r => (
+          <option key={r} value={r}>
+            {r}
+          </option>
+        ))}
       </select>
 
       <select
         className="filter-pill"
-        value={filters.gender || ""}
-        onChange={(e) => handlePatch({ gender: e.target.value })}
+        value={filters.gender}
+        onChange={e => onChange({ gender: e.target.value })}
       >
         <option value="">Gender</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
+        {genders.map(g => (
+          <option key={g} value={g}>
+            {g}
+          </option>
+        ))}
       </select>
 
       <select
         className="filter-pill"
-        value={filters.ageRangeLabel || ""}
-        onChange={(e) => handlePatch({ ageRangeLabel: e.target.value })}
+        value={filters.ageRange}
+        onChange={e => onChange({ ageRange: e.target.value })}
       >
         <option value="">Age Range</option>
-        <option value="18-25">18–25</option>
-        <option value="26-35">26–35</option>
-        <option value="36-45">36–45</option>
-        <option value="46-60">46–60</option>
-        <option value="60+">60+</option>
+        {ageRanges.map(a => (
+          <option key={a} value={a}>
+            {a}
+          </option>
+        ))}
       </select>
 
       <select
         className="filter-pill"
-        value={filters.productCategory || ""}
-        onChange={(e) => handlePatch({ productCategory: e.target.value })}
+        value={filters.productCategory}
+        onChange={e => onChange({ productCategory: e.target.value })}
       >
         <option value="">Product Category</option>
-        <option value="Beauty">Beauty</option>
-        <option value="Clothing">Clothing</option>
-        <option value="Electronics">Electronics</option>
-        
+        {categories.map(c => (
+          <option key={c} value={c}>
+            {c}
+          </option>
+        ))}
+      </select>
+
+      <select
+        multiple
+        className="filter-pill tags-filter"
+        value={filters.tags}
+        onChange={e =>
+          onChange({
+            tags: Array.from(e.target.selectedOptions).map(o => o.value),
+          })
+        }
+      >
+        <option value="organic">Organic</option>
+        <option value="skincare">Skincare</option>
+        <option value="gadgets">Gadgets</option>
+        <option value="wireless">Wireless</option>
+        <option value="fashion">Fashion</option>
       </select>
 
       <select
         className="filter-pill"
-        value={filters.paymentMethod || ""}
-        onChange={(e) => handlePatch({ paymentMethod: e.target.value })}
+        value={filters.paymentMethod}
+        onChange={e => onChange({ paymentMethod: e.target.value })}
       >
         <option value="">Payment Method</option>
-        <option value="Cash">Cash</option>
-        <option value="UPI">UPI</option>
-        <option value="Debit Card">Debit Card</option>
-        <option value="Credit Card">Credit Card</option>
+        {paymentMethods.map(m => (
+          <option key={m} value={m}>
+            {m}
+          </option>
+        ))}
       </select>
-
     </div>
   );
-};
-
-export default FiltersRow;
+}

@@ -1,23 +1,29 @@
 import React from "react";
 
-const SortBar = ({ value, onChange }) => {
+const options = [
+  { value: "CUSTOMER_NAME_ASC", label: "Customer Name (A–Z)" },
+  { value: "CUSTOMER_NAME_DESC", label: "Customer Name (Z–A)" },
+  { value: "DATE_DESC", label: "Date (Newest first)" },
+  { value: "DATE_ASC", label: "Date (Oldest first)" },
+  { value: "TOTAL_AMOUNT_DESC", label: "Total Amount (High–Low)" },
+  { value: "TOTAL_AMOUNT_ASC", label: "Total Amount (Low–High)" },
+];
+
+export default function SortBar({ value, onChange }) {
   return (
     <div className="sort-bar">
       <span className="sort-label">Sort by:</span>
       <select
         className="sort-select"
-        value={value || "CUSTOMER_NAME_ASC"}
-        onChange={(e) => onChange(e.target.value)}
+        value={value}
+        onChange={e => onChange(e.target.value)}
       >
-        <option value="CUSTOMER_NAME_ASC">Customer Name (A–Z)</option>
-        <option value="CUSTOMER_NAME_DESC">Customer Name (Z–A)</option>
-        <option value="DATE_DESC">Date (Newest first)</option>
-        <option value="DATE_ASC">Date (Oldest first)</option>
-        <option value="TOTAL_AMOUNT_DESC">Total Amount (High → Low)</option>
-        <option value="TOTAL_AMOUNT_ASC">Total Amount (Low → High)</option>
+        {options.map(opt => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
       </select>
     </div>
   );
-};
-
-export default SortBar;
+}
