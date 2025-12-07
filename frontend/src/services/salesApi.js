@@ -1,8 +1,13 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 });
+
+export const fetchSales = async (params) => {
+  const response = await api.post("/api/sales/search", params);
+  return response.data;
+};
 
 export async function fetchSales(filters) {
   const params = new URLSearchParams();
