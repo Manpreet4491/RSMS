@@ -5,6 +5,7 @@ const genders = ["Male", "Female", "Other"];
 const ageRanges = ["18–25", "26–35", "36–45", "46–60", "60+"];
 const categories = ["Electronics", "Clothing", "Beauty", "Grocery", "Home"];
 const paymentMethods = ["UPI", "Credit Card", "Debit Card", "Cash"];
+const tagsOptions = ["organic", "skincare", "gadgets", "wireless", "fashion"];
 
 export default function FiltersRow({ filters, onChange }) {
   return (
@@ -62,20 +63,16 @@ export default function FiltersRow({ filters, onChange }) {
       </select>
 
       <select
-        multiple
-        className="filter-pill tags-filter"
+        className="filter-pill"
         value={filters.tags}
-        onChange={e =>
-          onChange({
-            tags: Array.from(e.target.selectedOptions).map(o => o.value),
-          })
-        }
+        onChange={e => onChange({ tags: e.target.value })}
       >
-        <option value="organic">Organic</option>
-        <option value="skincare">Skincare</option>
-        <option value="gadgets">Gadgets</option>
-        <option value="wireless">Wireless</option>
-        <option value="fashion">Fashion</option>
+        <option value="">Tags</option>
+        {tagsOptions.map(t => (
+          <option key={t} value={t}>
+            {t}
+          </option>
+        ))}
       </select>
 
       <select

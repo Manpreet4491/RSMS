@@ -18,13 +18,13 @@ const AGE_RANGES = {
 const PAGE_SIZE = 20;
 
 export default function SalesDashboard() {
-  const [filters, setFilters] = useState({
+    const [filters, setFilters] = useState({
     customerRegion: "",
     gender: "",
     ageRange: "",
     productCategory: "",
     paymentMethod: "",
-    tags: [],
+    tags: "",
     startDate: "",
     endDate: "",
     searchTerm: "",
@@ -32,6 +32,7 @@ export default function SalesDashboard() {
     page: 0,
     size: PAGE_SIZE,
   });
+
 
   const [pageData, setPageData] = useState(null);
   const [loading, setLoading] = useState(false);
