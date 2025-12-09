@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -7,73 +7,89 @@ import {
   getPaginationRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import axiosInstance from "../../config/axios.config";
 
 const Table = () => {
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
-  const arr = [1,2,3,4,5]
+  const [sales, setSales] = useState([]);
+
+  useEffect(() => {
+    const fetchSales = async () => {
+      try {
+        const { data } = await axiosInstance.get(
+          "https://rsms-tp7c.onrender.com/api/sales"
+        );
+        console.log(data.content.length);
+        setSales(data.content);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchSales();
+  }, []);
 
   const columns = useMemo(
     () => [
       {
-        accessorKey: "userId",
+        accessorKey: "transactionId",
         header: "Transaction ID",
         cell: ({ getValue }) => (
           <span className="text-sm text-brand">{getValue()}</span>
         ),
       },
       {
-        accessorKey: "userName",
+        accessorKey: "date",
         header: "Date",
         cell: ({ getValue }) => (
           <div className="text-sm text-brand uppercase">{getValue()}</div>
         ),
       },
       {
-        accessorKey: "availableFunds",
+        accessorKey: "customerId",
         header: "Customer ID",
         cell: ({ getValue }) => (
           <div className="text-sm text-brand">{getValue()}</div>
         ),
       },
       {
-        accessorKey: "futMargin",
+        accessorKey: "customerName",
         header: "Customer Name",
         cell: ({ getValue }) => (
           <div className="text-sm text-brand">{getValue()}</div>
         ),
       },
       {
-        accessorKey: "optbrokerage",
+        accessorKey: "phoneNumber",
         header: "Phone Number",
         cell: ({ getValue }) => (
           <div className="text-sm text-brand">{getValue()}</div>
         ),
       },
       {
-        accessorKey: "futBrokerage",
+        accessorKey: "gender",
         header: "Gender",
         cell: ({ getValue }) => (
           <div className="text-sm text-brand">{getValue()}</div>
         ),
       },
       {
-        accessorKey: "isDemoId",
+        accessorKey: "age",
         header: "Age",
         cell: ({ getValue }) => (
           <div className="text-sm text-brand">{getValue()}</div>
         ),
       },
       {
-        accessorKey: "createdAt",
+        accessorKey: "productCategory",
         header: "Product Category",
         cell: ({ getValue }) => (
           <div className="text-sm text-brand">{getValue()}</div>
         ),
       },
       {
-        accessorKey: "createdAt",
+        accessorKey: "quantity",
         header: "Quantity",
         cell: ({ getValue }) => (
           <div className="text-sm text-brand">{getValue()}</div>
@@ -85,7 +101,7 @@ const Table = () => {
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data: arr,
+    data: sales,
     columns,
     state: {
       sorting,
@@ -101,15 +117,15 @@ const Table = () => {
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
-        pageSize: 10,
+        pageSize:10
       },
     },
   });
 
   return (
-    <>
+    <div className="flex flex-col">
       {/* Table */}
-      <div className="h-full">
+      <div className="h-[70vh] overflow-y-scroll">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-grayBG">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -154,7 +170,7 @@ const Table = () => {
       </div>
 
       {/* Pagination */}
-      {/* {table.getPageCount() > 1 && (
+      {table.getPageCount() > 1 && (
         <div className="px-4 py-3 border-t border-gray-200 sm:px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -208,8 +224,8 @@ const Table = () => {
             </div>
           </div>
         </div>
-      )} */}
-    </>
+      )}
+    </div>
   );
 };
 
