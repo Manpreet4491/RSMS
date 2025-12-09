@@ -1,13 +1,7 @@
-import SalesDashboard from "./pages/SalesDashboard";
+import HomeScreen from "./screens/HomeScreen";
 
-function App() {
-  return (
-    <div className="app-root">
-      <div className="app-shell">
-        <SalesDashboard />
-      </div>
-    </div>
-  );
-}
+const App = () => {
+  return <HomeScreen />;
+};
 
 export default App;

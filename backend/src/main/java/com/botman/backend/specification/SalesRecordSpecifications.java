@@ -1,56 +1,92 @@
 package com.botman.backend.specification;
 
-import com.botman.backend.dto.SalesFilterRequest;
 import com.botman.backend.model.SalesRecord;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 
 public class SalesRecordSpecifications {
-    public static Specification<SalesRecord> withFilters(SalesFilterRequest req) {
+
+    public static Specification<SalesRecord> byCustomerRegion(String region) {
+        return (root, query, cb) ->
+                (region == null || region.isBlank())
+                        ? null
+                        : cb.equal(root.get("customerRegion"), region);
+    }
+
+    public static Specification<SalesRecord> byGender(String gender) {
+        return (root, query, cb) ->
+                (gender == null || gender.isBlank())
+                        ? null
+                        : cb.equal(root.get("gender"), gender);
+    }
+
+    public static Specification<SalesRecord> byAgeBetween(Integer minAge, Integer maxAge) {
         return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
+            if (minAge == null && maxAge == null) return null;
 
-            if (req.getSearch() != null && !req.getSearch().isBlank()) {
-                String like = "%" + req.getSearch().toLowerCase() + "%";
-                predicates.add(cb.or(cb.like(cb.lower(root.get("customerName")), like), cb.like(cb.lower(root.get("phoneNumber")), like)));
+            if (minAge != null && maxAge != null) {
+                return cb.between(root.get("age"), minAge, maxAge);
+            } else if (minAge != null) {
+                return cb.greaterThanOrEqualTo(root.get("age"), minAge);
+            } else {
+                return cb.lessThanOrEqualTo(root.get("age"), maxAge);
             }
+        };
+    }
 
-            if (req.getRegions() != null && !req.getRegions().isEmpty()) {
-                predicates.add(root.get("customerRegion").in(req.getRegions()));
+    public static Specification<SalesRecord> byProductCategory(String category) {
+        return (root, query, cb) ->
+                (category == null || category.isBlank())
+                        ? null
+                        : cb.equal(root.get("productCategory"), category);
+    }
+
+    public static Specification<SalesRecord> byPaymentMethod(String paymentMethod) {
+        return (root, query, cb) ->
+                (paymentMethod == null || paymentMethod.isBlank())
+                        ? null
+                        : cb.equal(root.get("paymentMethod"), paymentMethod);
+    }
+
+    public static Specification<SalesRecord> byTags(List<String> tags) {
+        return (root, query, cb) -> {
+            if (tags == null || tags.isEmpty()) return null;
+            Predicate[] predicates = tags.stream()
+                    .map(tag -> cb.like(cb.lower(root.get("tags")), "%" + tag.toLowerCase() + "%"))
+                    .toArray(Predicate[]::new);
+
+            return cb.or(predicates);
+        };
+    }
+
+    public static Specification<SalesRecord> byDateRange(LocalDate start, LocalDate end) {
+        return (root, query, cb) -> {
+            if (start == null && end == null) return null;
+
+            if (start != null && end != null) {
+                return cb.between(root.get("date"), start, end);
+            } else if (start != null) {
+                return cb.greaterThanOrEqualTo(root.get("date"), start);
+            } else {
+                return cb.lessThanOrEqualTo(root.get("date"), end);
             }
+        };
+    }
 
-            if (req.getGenders() != null && !req.getGenders().isEmpty()) {
-                predicates.add(root.get("gender").in(req.getGenders()));
-            }
+    public static Specification<SalesRecord> bySearchTerm(String search) {
+        return (root, query, cb) -> {
+            if (search == null || search.isBlank()) return null;
+            String like = "%" + search.toLowerCase() + "%";
 
-            if (req.getProductCategories() != null && !req.getProductCategories().isEmpty()) {
-                predicates.add(root.get("productCategory").in(req.getProductCategories()));
-            }
-
-            if (req.getPaymentMethods() != null && !req.getPaymentMethods().isEmpty()) {
-                predicates.add(root.get("paymentMethod").in(req.getPaymentMethods()));
-            }
-
-            if (req.getCustomerTypes() != null && !req.getCustomerTypes().isEmpty()) {
-                predicates.add(root.get("customerType").in(req.getCustomerTypes()));
-            }
-
-            if (req.getAgeMin() != null) predicates.add(cb.greaterThanOrEqualTo(root.get("age"), req.getAgeMin()));
-            if (req.getAgeMax() != null) predicates.add(cb.lessThanOrEqualTo(root.get("age"), req.getAgeMax()));
-
-            if (req.getDateFrom() != null) predicates.add(cb.greaterThanOrEqualTo(root.get("date"), req.getDateFrom()));
-            if (req.getDateTo() != null) predicates.add(cb.lessThanOrEqualTo(root.get("date"), req.getDateTo()));
-
-            if (req.getTags() != null && !req.getTags().isEmpty()) {
-                List<Predicate> tagPredicates = new ArrayList<>();
-                req.getTags().forEach(tag -> tagPredicates.add(cb.like(cb.lower(root.get("tags")), "%" + tag.toLowerCase() + "%")));
-                predicates.add(cb.or(tagPredicates.toArray(new Predicate[0])));
-            }
-
-            return cb.and(predicates.toArray(new Predicate[0]));
+            return cb.or(
+                    cb.like(cb.lower(root.get("customerName")), like),
+                    cb.like(cb.lower(root.get("phoneNumber")), like),
+                    cb.like(cb.lower(root.get("productName")), like),
+                    cb.like(cb.lower(root.get("employeeName")), like)
+            );
         };
     }
 }

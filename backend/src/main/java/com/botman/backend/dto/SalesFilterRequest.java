@@ -1,38 +1,34 @@
 package com.botman.backend.dto;
 
-import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class SalesFilterRequest {
-    private String search;
 
-    private List<String> regions;
-    private List<String> genders;
-    private List<String> productCategories;
+    private Integer page = 0;
+    private Integer size = 20;
+
+    private String customerRegion;
+    private String gender;
+    private Integer minAge;
+    private Integer maxAge;
+    private String productCategory;
     private List<String> tags;
-    private List<String> paymentMethods;
-    private List<String> customerTypes;
-
-    @Min(0)
-    private Integer ageMin;
-
-    @Min(0)
-    private Integer ageMax;
+    private String paymentMethod;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate dateFrom;
-
+    private LocalDate startDate;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate dateTo;
+    private LocalDate endDate;
 
-    private String sortBy = "date";
-    private String sortDir = "desc";
-
-    private int page = 0;
-    private int size = 10;
+    private String searchTerm;
+    private String sortBy;
 }

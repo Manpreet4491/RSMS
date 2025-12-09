@@ -5,37 +5,51 @@ import com.botman.backend.model.SalesRecord;
 import com.botman.backend.repository.SalesRecordRepository;
 import com.botman.backend.specification.SalesRecordSpecifications;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class SalesService {
+
     private final SalesRecordRepository repository;
 
     public Page<SalesRecord> getSales(SalesFilterRequest req) {
 
-        if (req.getAgeMin() != null && req.getAgeMax() != null && req.getAgeMin() > req.getAgeMax()) {
-            int t = req.getAgeMin();
-            req.setAgeMin(req.getAgeMax());
-            req.setAgeMax(t);
+        int page = req.getPage() != null ? req.getPage() : 0;
+        int size = req.getSize() != null ? req.getSize() : 20;
+
+        Sort sort = buildSort(req.getSortBy());
+
+        Specification<SalesRecord> spec = Specification
+                .where(SalesRecordSpecifications.byCustomerRegion(req.getCustomerRegion()))
+                .and(SalesRecordSpecifications.byGender(req.getGender()))
+                .and(SalesRecordSpecifications.byAgeBetween(req.getMinAge(), req.getMaxAge()))
+                .and(SalesRecordSpecifications.byProductCategory(req.getProductCategory()))
+                .and(SalesRecordSpecifications.byPaymentMethod(req.getPaymentMethod()))
+                .and(SalesRecordSpecifications.byTags(req.getTags()))
+                .and(SalesRecordSpecifications.byDateRange(req.getStartDate(), req.getEndDate()))
+                .and(SalesRecordSpecifications.bySearchTerm(req.getSearchTerm()));
+
+        return repository.findAll(spec, PageRequest.of(page, size, sort));
+
+    }
+
+    private Sort buildSort(String sortByRaw) {
+        if (sortByRaw == null || sortByRaw.isBlank()) {
+            return Sort.by("customerName").ascending();
         }
 
-        if (req.getDateFrom() != null && req.getDateTo() != null && req.getDateFrom().isAfter(req.getDateTo())) {
-            var t = req.getDateFrom();
-            req.setDateFrom(req.getDateTo());
-            req.setDateTo(t);
-        }
-
-        String sortField = switch (req.getSortBy()) {
-            case "quantity" -> "quantity";
-            case "customerName" -> "customerName";
-            default -> "date";
+        return switch (sortByRaw) {
+            case "CUSTOMER_NAME_DESC" -> Sort.by("customerName").descending();
+            case "DATE_ASC" -> Sort.by("date").ascending();
+            case "DATE_DESC" -> Sort.by("date").descending();
+            case "TOTAL_AMOUNT_ASC" -> Sort.by("totalAmount").ascending();
+            case "TOTAL_AMOUNT_DESC" -> Sort.by("totalAmount").descending();
+            default -> Sort.by("customerName").ascending();
         };
-
-        Sort sort = Sort.by("asc".equalsIgnoreCase(req.getSortDir()) ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
-        Pageable pageable = PageRequest.of(Math.max(req.getPage(), 0), req.getSize() <= 0 ? 10 : req.getSize(), sort);
-
-        return repository.findAll(SalesRecordSpecifications.withFilters(req), pageable);
     }
 }
