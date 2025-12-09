@@ -37,7 +37,7 @@ export default function SalesDashboard() {
   const [pageData, setPageData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const apiParams = useMemo(() => {
+    const apiParams = useMemo(() => {
     const age = AGE_RANGES[filters.ageRange] || {};
     return {
       page: filters.page,
@@ -48,13 +48,14 @@ export default function SalesDashboard() {
       maxAge: age.maxAge ?? undefined,
       productCategory: filters.productCategory || undefined,
       paymentMethod: filters.paymentMethod || undefined,
-      tags: filters.tags.length ? filters.tags : undefined,
+      tags: filters.tags ? [filters.tags] : undefined,
       startDate: filters.startDate || undefined,
       endDate: filters.endDate || undefined,
       searchTerm: filters.searchTerm || undefined,
       sortBy: filters.sortBy || undefined,
     };
   }, [filters]);
+
 
   useEffect(() => {
     let isActive = true;
