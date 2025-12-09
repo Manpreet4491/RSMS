@@ -5,6 +5,6 @@ const api = axios.create({
 });
 
 export async function fetchSales(params) {
-  const response = await api.post("/api/sales/search", params);
+  const response = await api.post("/api/sales", params);
   return response.data;
 }
